@@ -1,0 +1,1 @@
+Biblioteca <string.h>: https://petbcc.ufscar.br/string/
