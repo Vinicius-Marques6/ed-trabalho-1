@@ -1,41 +1,27 @@
-// C program to illustrate the regexec() function
-#include <regex.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-void print_result(int value)
-{
- 
-    // If pattern found
-    if (value == 0) {
-        printf("Pattern found.\n");
+int sti(const char *s) {
+    char * resto;
+    int n = strtol(s, &resto, 10);
+    if (*resto != '\0') {
+        int i, valor = 7;
+        int tam = strlen(s);
+        for (i = 0; i < tam; i++){
+            valor = 31 * valor + s[i];
+        }
+        return valor;
     }
- 
-    // If pattern not found
-    else if (value == REG_NOMATCH) {
-        printf("Pattern not found.\n");
-    }
- 
-    // If error occurred during Pattern
-    // matching
-    else {
-        printf("An error occurred.\n");
-    }
+
+    return n;
 }
 
 int main() {
-    // Variable to store initial regex()
-    regex_t reegex;
- 
-    // Variable for return type
-    int value;
- 
-    // Creation of regEx
-    value = regcomp( &reegex, "[", 0);
+    int a = 11;
+    char b[4] = "!";
 
- 
-    value = regexec( &reegex, "fmunicipio[s", 0, NULL, 0);
- 
-    // Print the results
-    print_result(value);
+    printf("%d\n", a);
+    printf("%d\n", sti(b));
     return 0;
 }
