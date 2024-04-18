@@ -1,11 +1,14 @@
+#ifdef VERBOSE
+#include <time.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#ifdef VERBOSE
-#include <time.h>
-#endif
+
 #include "./lib/include/hash.h"
+#include "./lib/include/abb.h"
 #include "./lib/include/json.h"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -29,11 +32,11 @@ typedef struct {
 } tmunicipio;
 
 char *get_cod(void *reg) {
-    return (*((tmunicipio * )reg)).codigo_ibge;
+    return ((tmunicipio * )reg)->codigo_ibge;
 }
 
 char *get_nome(void *reg) {
-    return (*((tmunicipio * )reg)).nome;
+    return ((tmunicipio * )reg)->nome;
 }
 
 int isEqual(void *reg, const char *key) {

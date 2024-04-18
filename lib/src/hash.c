@@ -8,7 +8,6 @@ int chaveDivisao(int key, int TABLE_SIZE){
     return key % TABLE_SIZE;
 }
 
-
 uint32_t sti(const char *str) {
     char * resto;
     int n = strtol(str, &resto, 10);
@@ -113,5 +112,7 @@ void hash_apaga(thash *h){
             }
         }
     }
+    
     free(h->table);
+    h->table = NULL;
 }
