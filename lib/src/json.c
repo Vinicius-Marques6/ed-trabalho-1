@@ -11,7 +11,7 @@ char *ltrim(char *s) {
     return s;
 }
 
-int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), void (*insere)(void * reg,char* key, char* value), void (*salva)(void *reg, void *dest), void *dest) {
+int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), void (*insere)(void * reg,char* key, char* value), void (*salva)(void *reg, void *dest[]), void *dest) {
     char linha[BUFFER_SIZE];
     while (fgets(linha, BUFFER_SIZE, fjson) != NULL)
     {
@@ -39,13 +39,13 @@ int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), voi
                     value++;
                     value = ltrim(value);
                     char *squote = strchr(value, '"');
-                    // if (squote != NULL) {
-                    //     value = squote + 1;
-                    //     char *end = strchr(value, '"');
-                    //     if (end != NULL) {
-                    //         *end = '\0';
-                    //     }
-                    // }
+                    if (squote != NULL) {
+                        value = squote + 1;
+                        char *end = strchr(value, '"');
+                        if (end != NULL) {
+                            *end = '\0';
+                        }
+                    }
                     char *end = strrchr(value, ',');
                     if (end != NULL && *(end+1) == '\n') {
                         *end = '\0';

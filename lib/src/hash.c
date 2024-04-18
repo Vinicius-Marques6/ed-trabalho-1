@@ -3,35 +3,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/hash.h"
-#define SEED    0x12345678
 
-uint32_t murmur_hash(const char* str, uint32_t h){
-    /* One-byte-at-a-time Murmur hash 
-    Source: https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp */
-    for (; *str; ++str) {
-        h ^= *str;
-        h *= 0x5bd1e995;
-        h ^= h >> 15;
-    }
-    return h;
+int chaveDivisao(int key, int TABLE_SIZE){
+    return key % TABLE_SIZE;
 }
 
-uint32_t valorString(const char * key){
-    int i, valor = 7;
-    int tam = strlen(key);
-    for (i = 0; i < tam; i++){
-        valor = 31 * valor + key[i];
-    }
-    return valor;
-}
 
-int chaveDivisao(const char * key, int TABLE_SIZE){
-    return valorString(key) % TABLE_SIZE;
+uint32_t sti(const char *str) {
+    char * resto;
+    int n = strtol(str, &resto, 10);
+    if (*resto != '\0') {
+        uint32_t valor = 0;
+        int tam = strlen(str);
+        for (int i = 0; i < tam; i++){
+            valor = 31 * valor + (int) str[i];
+            // valor = ((valor << 5) + valor) + str[i];
+        }
+        return valor & 0x7FFFFFFF;
+    }
+
+    return n;
 }
 
 int hash_duplo(const char * key, int i, int TABLE_SIZE){
-    int h1 = murmur_hash(key ,SEED) % TABLE_SIZE; 
-    int h2 = chaveDivisao(key, TABLE_SIZE - 2) + 1;
+    int h1 = chaveDivisao(sti(key), TABLE_SIZE);
+    int h2 = chaveDivisao(sti(key), TABLE_SIZE - 1) + 1;
     return (h1 + i*h2) % TABLE_SIZE;
 }
 
@@ -45,12 +41,17 @@ int hash_insere(thash * h, void * bucket){
     }
     /*fazer a insercao*/
     while(h->table[pos] != 0){
-        printf("Colisão na posição %d\n", pos);
         if (h->table[pos] == h->deleted)
             break;
+        #ifdef VERBOSE
+        h->qtd_colisoes += 1;
+        #endif
         pos = hash_duplo(h->get_key(bucket), ++tentativas, h->TABLE_SIZE);
     }
-    printf("Inserindo na posição %d\n", pos);
+    #ifdef VERBOSE
+    if (h->max_tentativas < tentativas)
+        h->max_tentativas = tentativas;
+    #endif
     h->table[pos] = (uintptr_t) bucket;
     h->size += 1;
 
@@ -58,13 +59,17 @@ int hash_insere(thash * h, void * bucket){
 }
 
 int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) ){
-    h->table = calloc(sizeof(void *),nbuckets + 1);
+    h->table = calloc(nbuckets + 1, sizeof(void *));
     if (h->table == NULL){
         return EXIT_FAILURE;
     }
     h->TABLE_SIZE = nbuckets + 1;
     h->size = 0;
     h->deleted = (uintptr_t) &(h->size);
+    #ifdef VERBOSE
+    h->qtd_colisoes = 0;
+    h->max_tentativas = 0;
+    #endif
     h->get_key = get_key;
     return EXIT_SUCCESS;
 }
