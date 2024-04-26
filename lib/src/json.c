@@ -52,7 +52,7 @@ int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), voi
                     }
 
                     insere(reg, keys[i], value);
-                }               
+                }
             }
             salva(reg, dest);
         }

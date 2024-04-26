@@ -39,6 +39,20 @@ char *get_nome(void *reg) {
     return ((tmunicipio * )reg)->nome;
 }
 
+float cmp(void *reg1, void *reg2, int nivel) {
+    if (nivel % 2 == 0) {
+        return ((tmunicipio *) reg1)->latitude - ((tmunicipio *) reg2)->latitude;
+    } else {
+        return ((tmunicipio *) reg1)->longitude - ((tmunicipio *) reg2)->longitude;
+    }
+}
+
+float distancia(void *p1, void *p2) {
+    float dx = ((tmunicipio *) p1)->latitude - ((tmunicipio *) p2)->latitude;
+    float dy = ((tmunicipio *) p1)->longitude - ((tmunicipio *) p2)->longitude;
+    return dx * dx + dy * dy;
+}
+
 int isEqual(void *reg, const char *key) {
     return strcmp(get_cod(reg), key) == 0;
 }
@@ -74,6 +88,7 @@ void insere(void *municipio, char *key, char *value) {
 void salva(void *reg, void *dest[]) {
     hash_insere((thash *) dest[0], reg);
     hash_insere((thash *) dest[1], reg);
+    abb_insere((tarv *) dest[2], reg);
 }
 
 void imprime_municipio(tmunicipio *m) {
@@ -100,17 +115,19 @@ void imprime_relatorio(thash hash, char *nome) {
 int main() {
     FILE *fmunicipios;
     thash hash_cod, hash_nome;
+    tarv arv;
     hash_constroi(&hash_cod, 10006, get_cod);
     hash_constroi(&hash_nome, 10006, get_nome);
+    abb_constroi(&arv, cmp, distancia);
 
-    fmunicipios = fopen("municipios.json", "r");
+    fmunicipios = fopen("municipios2.json", "r");
 
     if (fmunicipios == NULL) {
         printf("Erro! Não foi possível abrir o arquivo municipios.json\n");
         return EXIT_FAILURE;
     }
 
-    thash *dest[] = {&hash_cod, &hash_nome};
+    void *dest[] = {&hash_cod, &hash_nome, &arv};
     char *keys[] = {"codigo_ibge", "nome", "latitude", "longitude", "capital", "codigo_uf", "siafi_id", "ddd", "fuso_horario"};
     #ifdef VERBOSE
     clock_t t = clock();
@@ -133,6 +150,9 @@ int main() {
         imprime_relatorio(hash_cod, "Código IBGE");
         imprime_relatorio(hash_nome, "Nome");
     #endif
+
+    tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, "2300101");
+    printf("%s\n", ((tmunicipio *) abb_busca(&arv, m))->nome);
 
     for (;;) {
         printf("\nBuscar por:\n"
@@ -158,7 +178,20 @@ int main() {
                 printf("Município não encontrado\n");
             }
         } else if (opcao == 2) {
-            //TODO: Implementar busca de vizinhos
+            printf("Digite o código IBGE do município que deseja buscar: ");
+            char codigo_ibge[8];
+            scanf("%s", codigo_ibge);
+            printf("Digite a quantidade de vizinhos: ");
+            int qtd_vizinhos;
+            scanf("%d", &qtd_vizinhos);
+
+            tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
+            if (m != NULL) {
+                // TODO: Implementar busca por vizinhos
+            } else {
+                printf("Município não encontrado\n");
+            }
+
         } else if (opcao == 3) {
             printf("Digite o nome do município que deseja buscar: ");
             char nome[100];
