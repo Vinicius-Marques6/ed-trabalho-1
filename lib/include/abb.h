@@ -10,13 +10,13 @@ typedef struct _tnode{
 
 typedef struct _abb{
     tnode * raiz;
-    float (*cmp)(void * , void *, int);
-    float (*dist)(void *, void *);
+    double (*cmp)(void * , void *, int);
+    double (*dist)(void *, void *);
 }tarv;
 
-void abb_constroi(tarv *parv, float (*cmp)(void *, void *, int), float (*dist)(void *, void *));
+void abb_constroi(tarv *parv, double (*cmp)(void *, void *, int), double (*dist)(void *, void *));
 int abb_insere(tarv * parv, void * reg);
 void * abb_busca(tarv * parv,  void * reg);
-void * closest_point(tarv * parv, void * pivo);
+void ** abb_busca_prox(tarv * parv, tnode * pnode, void * reg, int i);
 
 #endif

@@ -22,8 +22,8 @@
 typedef struct {
     char codigo_ibge[8];
     char nome[100];
-    float latitude;
-    float longitude;
+    double latitude;
+    double longitude;
     int capital;
     int codigo_uf;
     int siafi_id;
@@ -39,7 +39,7 @@ char *get_nome(void *reg) {
     return ((tmunicipio * )reg)->nome;
 }
 
-float cmp(void *reg1, void *reg2, int nivel) {
+double cmp(void *reg1, void *reg2, int nivel) {
     if (nivel % 2 == 0) {
         return ((tmunicipio *) reg1)->latitude - ((tmunicipio *) reg2)->latitude;
     } else {
@@ -47,9 +47,9 @@ float cmp(void *reg1, void *reg2, int nivel) {
     }
 }
 
-float distancia(void *p1, void *p2) {
-    float dx = ((tmunicipio *) p1)->latitude - ((tmunicipio *) p2)->latitude;
-    float dy = ((tmunicipio *) p1)->longitude - ((tmunicipio *) p2)->longitude;
+double distancia(void *p1, void *p2) {
+    double dx = ((tmunicipio *) p1)->latitude - ((tmunicipio *) p2)->latitude;
+    double dy = ((tmunicipio *) p1)->longitude - ((tmunicipio *) p2)->longitude;
     return dx * dx + dy * dy;
 }
 
@@ -92,6 +92,11 @@ void salva(void *reg, void *dest[]) {
 }
 
 void imprime_municipio(tmunicipio *m) {
+    if (m == NULL) {
+        printf("%sMunicípio não encontrado%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+        return;
+    }
+
     printf("%sCódigo IBGE:%s %s\n",ANSI_COLOR_CYAN,ANSI_COLOR_RESET , m->codigo_ibge);
     printf("%sNome:%s %s\n", ANSI_COLOR_CYAN,ANSI_COLOR_RESET, m->nome);
     printf("%sLatitude:%s %f\n", ANSI_COLOR_CYAN,ANSI_COLOR_RESET, m->latitude);
@@ -151,19 +156,17 @@ int main() {
         imprime_relatorio(hash_nome, "Nome");
     #endif
 
-    tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, "2300101");
-    printf("%s\n", ((tmunicipio *) abb_busca(&arv, m))->nome);
-
     for (;;) {
         printf("\nBuscar por:\n"
-                "1 - Nome\n"
+                "1 - Código IBGE\n"
                 "2 - Vizinhos\n"
-                "3 - Código IBGE\n"
+                "3 - Nome\n"
                 "0 - Sair\n");
         int opcao;
         scanf("%d", &opcao);
         if (opcao == 0) {
             break;
+
         } else if (opcao == 1) {
             printf("Digite o código IBGE do município que deseja buscar: ");
             char codigo_ibge[8];
@@ -172,11 +175,7 @@ int main() {
                 break;
             }
             tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
-            if (m != NULL) {
-                imprime_municipio(m);
-            } else {
-                printf("Município não encontrado\n");
-            }
+            imprime_municipio(m);
         } else if (opcao == 2) {
             printf("Digite o código IBGE do município que deseja buscar: ");
             char codigo_ibge[8];
@@ -187,24 +186,33 @@ int main() {
 
             tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
             if (m != NULL) {
-                // TODO: Implementar busca por vizinhos
+                tmunicipio *melhor = (tmunicipio *) abb_busca_prox(&arv, arv.raiz, m, qtd_vizinhos);
+
+                printf("%sCódigo IBGE:%s %s\n",ANSI_COLOR_CYAN,ANSI_COLOR_RESET , melhor->codigo_ibge);
             } else {
                 printf("Município não encontrado\n");
             }
+            //imprime_municipio(melhor);
 
         } else if (opcao == 3) {
             printf("Digite o nome do município que deseja buscar: ");
             char nome[100];
             scanf(" %[^\n]", nome);
-            if (strcmp(nome, "0") == 0) {
-                break;
-            }
+            printf("Digite a quantidade de vizinhos: ");
+            int qtd_vizinhos;
+            scanf("%d", &qtd_vizinhos);
+
             tmunicipio *m = (tmunicipio *) hash_busca(hash_nome, nome);
             if (m != NULL) {
-                imprime_municipio(m);
+                tmunicipio **melhor = (tmunicipio **) abb_busca_prox(&arv, arv.raiz, m, qtd_vizinhos);
+                for (int i = 0; i < qtd_vizinhos; i++) {
+                    imprime_municipio(melhor[i]);
+                }
+
+                free(melhor);
             } else {
                 printf("Município não encontrado\n");
-            }        
+            }    
         } else {
             printf("Opção inválida\n");
         }
