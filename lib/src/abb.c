@@ -88,7 +88,7 @@ void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, doubl
     abb_busca_prox_node(parv, node_contr, reg, ++nivel, melhor_dist, melhor_reg, qtd_visitados);
 }
 
-void ** abb_busca_prox(tarv * parv, tnode * pnode, void * reg, int i) {
+void ** abb_busca_prox(tarv * parv, void * reg, int i) {
     void ** melhores_regs = calloc(i, sizeof(void *));
     double melhor_dist = parv->dist(parv->raiz->reg, reg);
     melhores_regs[0] = parv->raiz->reg;

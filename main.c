@@ -186,7 +186,7 @@ int main() {
 
             tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
             if (m != NULL) {
-                tmunicipio *melhor = (tmunicipio *) abb_busca_prox(&arv, arv.raiz, m, qtd_vizinhos);
+                tmunicipio *melhor = (tmunicipio *) abb_busca_prox(&arv, m, qtd_vizinhos);
 
                 printf("%sCódigo IBGE:%s %s\n",ANSI_COLOR_CYAN,ANSI_COLOR_RESET , melhor->codigo_ibge);
             } else {
@@ -204,7 +204,7 @@ int main() {
 
             tmunicipio *m = (tmunicipio *) hash_busca(hash_nome, nome);
             if (m != NULL) {
-                tmunicipio **melhor = (tmunicipio **) abb_busca_prox(&arv, arv.raiz, m, qtd_vizinhos);
+                tmunicipio **melhor = (tmunicipio **) abb_busca_prox(&arv, m, qtd_vizinhos);
                 for (int i = 0; i < qtd_vizinhos; i++) {
                     imprime_municipio(melhor[i]);
                 }
