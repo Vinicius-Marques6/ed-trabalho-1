@@ -87,11 +87,29 @@ void * hash_busca(thash h, const char * key){
     return ret;
 }
 
+void ** hash_busca_todos(thash h, const char * key){
+    int tentativas = 0;
+    int pos = hash_duplo(key, tentativas, h.TABLE_SIZE);
+    void ** ret = malloc(sizeof(void *));
+    ret[0] = NULL;
+    int i = 0;
+    while(h.table[pos] != 0){
+        if (strcmp(h.get_key((void*)h.table[pos]),key) == 0){
+            ret[i] = (void *) h.table[pos];
+            i++;
+            ret = realloc(ret, (i+1)*sizeof(void *));
+            ret[i] = NULL;
+        }
+        pos = hash_duplo(key, ++tentativas, h.TABLE_SIZE);
+    }
+    return ret;
+}
+
 int hash_remove(thash * h, const char * key){
     int tentativas = 0;
     int pos = hash_duplo(key, tentativas, h->TABLE_SIZE);
     while(h->table[pos]!=0){
-        if (strcmp(h->get_key((void*)h->table[pos]),key) == 0){ /* se achei remove*/
+        if (strcmp(h->get_key((void*)h->table[pos]),key) == 0){ // se achei remove
             free((void *)h->table[pos]);
             h->table[pos] = h->deleted;
             h->size -= 1;

@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "../include/heap.h"
 
-void troca(int *a, int *b) {
-	int aux = *a;
+void troca(treg_dist *a, treg_dist *b) {
+	treg_dist aux = *a;
 	*a = *b;
 	*b = aux;
 }
@@ -26,9 +26,9 @@ void desce(theap * h, int n) {
 	int esq = filho_esq(n);
 	int dir = filho_dir(n);
 
-	if (esq < h->tam && h->cmp(h->vetor[esq], h->vetor[n]) > 0)
+	if (esq < h->tam && h->vetor[esq].dist > h->vetor[maior].dist)
 		maior = esq;
-	if (dir < h->tam && h->cmp(h->vetor[dir], h->vetor[maior]) > 0)
+	if (dir < h->tam && h->vetor[dir].dist > h->vetor[maior].dist)
 		maior = dir;
 
 	if (maior != n) {
@@ -39,37 +39,42 @@ void desce(theap * h, int n) {
 
 void sobe(theap *h, int n) {
 	int p = pai(n);
-    if (h->cmp(h->vetor[p], h->vetor[n]) < 0) {
+    if (h->vetor[p].dist < h->vetor[n].dist) {
 		troca(&h->vetor[p], &h->vetor[n]);
 		sobe(h, p);
 	}
 }
 
-void heap_constroi(theap * h, int max, double (*cmp)(void *, void *)){
-    h->vetor = calloc(max, sizeof(void *));
+void heap_constroi(theap * h, int max){
+    h->vetor = (treg_dist *) malloc(max * sizeof(treg_dist));
+	if (h->vetor == NULL) {
+		printf("Erro ao alocar vetor\n");
+		exit(EXIT_FAILURE);
+	}
     h->tam = 0;
     h->max = max;
-    h->cmp = cmp;
 }
 
-int heap_insere(theap * h, void *reg){
+int heap_insere(theap * h, void *reg, double dist){
     if (h->tam == h->max)
         return EXIT_FAILURE;
     
-    h->vetor[h->tam] = reg;
+    h->vetor[h->tam].reg = reg;
+	h->vetor[h->tam].dist = dist;
     sobe(h, h->tam);
     h->tam += 1;
 
     return EXIT_SUCCESS;
 }
 
-void altera_prioridade(theap * h, int n, void * valor) {
-	int anterior = h->vetor[n];
-	h->vetor[n] = valor;
+void altera_prioridade(theap * h, int n, void * valor, double dist) {
+	treg_dist anterior = h->vetor[n];
+	h->vetor[n].reg = valor;
+	h->vetor[n].dist = dist;
 
-	if (h->cmp(valor, anterior) > 0)
+	if (dist > anterior.dist)
 		sobe(h, n);
-	if (h->cmp(valor, anterior) < 0)
+	if (dist < anterior.dist)
 		desce(h, n);
 }
 
@@ -78,5 +83,14 @@ void heap_apaga(theap * h){
     h->vetor = NULL;
     h->tam = 0;
     h->max = 0;
-    h->cmp = NULL;
+}
+
+void heap_sort(theap * h) {
+	int n = h->tam;
+	for (int i = h->tam - 1; i > 0; i--) {
+		troca(&h->vetor[0], &h->vetor[i]);
+		h->tam -= 1;
+		desce(h, 0);
+	}
+	h->tam = n;
 }

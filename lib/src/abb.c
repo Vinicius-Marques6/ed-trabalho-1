@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "../include/abb.h"
 #include "../include/heap.h"
 
@@ -9,6 +10,7 @@ void abb_constroi(tarv *parv, double (*cmp)(void *, void *, int), double (*dist)
     parv->raiz = NULL;
     parv->cmp = cmp;
     parv->dist = dist;
+    parv->tam = 0;
 }
 
 int abb_insere_node(tarv * parv, tnode ** ppnode, void *reg, int nivel){
@@ -17,6 +19,7 @@ int abb_insere_node(tarv * parv, tnode ** ppnode, void *reg, int nivel){
         (*ppnode)->reg = reg;
         (*ppnode)->esq = NULL;
         (*ppnode)->dir = NULL;
+        parv->tam++;
         return EXIT_SUCCESS;
     } else if (parv->cmp((*ppnode)->reg, reg, nivel) > 0){ // esquerda
         return abb_insere_node(parv,&((*ppnode)->esq), reg, ++nivel);
@@ -60,7 +63,7 @@ typedef struct {
     char fuso_horario[100];
 } tmunicipio;
 
-void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, double *melhor_dist, void **melhor_reg, int *qtd_visitados) {
+void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, theap * melhores_regs, int *qtd_visitados) {
     if (pnode == NULL) {
         return;
     }
@@ -68,9 +71,11 @@ void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, doubl
     ++(*qtd_visitados);
 
     double dist = parv->dist(pnode->reg, reg);
-    if (dist > 0 && dist < *melhor_dist) {
-        *melhor_dist = dist;
-        melhor_reg[0] = pnode->reg;
+    if (dist > 0) {
+        int ret = heap_insere(melhores_regs, pnode->reg, dist);
+        if (ret == EXIT_FAILURE && dist < melhores_regs->vetor[0].dist) {
+            altera_prioridade(melhores_regs, 0, pnode->reg, dist);
+        }
     }
 
     tnode * node_prox = NULL;
@@ -84,16 +89,34 @@ void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, doubl
         node_contr = pnode->esq;
     }
 
-    abb_busca_prox_node(parv, node_prox, reg, ++nivel, melhor_dist, melhor_reg, qtd_visitados);
-    abb_busca_prox_node(parv, node_contr, reg, ++nivel, melhor_dist, melhor_reg, qtd_visitados);
+    abb_busca_prox_node(parv, node_prox, reg, ++nivel, melhores_regs, qtd_visitados);
+    abb_busca_prox_node(parv, node_contr, reg, ++nivel, melhores_regs, qtd_visitados);
 }
 
-void ** abb_busca_prox(tarv * parv, void * reg, int i) {
-    void ** melhores_regs = calloc(i, sizeof(void *));
-    double melhor_dist = parv->dist(parv->raiz->reg, reg);
-    melhores_regs[0] = parv->raiz->reg;
+void ** abb_busca_prox(tarv * parv, void * reg, int * i) {
+    if (*i >= parv->tam) {
+        *i = parv->tam - 1;
+    }
+
+    void ** ret = malloc(*i * sizeof(void *));
+    if (ret == NULL) {
+        printf("Erro ao alocar vetor\n");
+        exit(EXIT_FAILURE);
+    }
+
+    theap melhores_regs;
+    heap_constroi(&melhores_regs, *i);
+    melhores_regs.vetor[0].dist = INFINITY;
     int qtd_visitados = 0;
-    abb_busca_prox_node(parv, parv->raiz, reg, 0, &melhor_dist, melhores_regs, &qtd_visitados);
-    printf("Visitados: %d\n", qtd_visitados);
-    return melhores_regs;
+
+    abb_busca_prox_node(parv, parv->raiz, reg, 0, &melhores_regs, &qtd_visitados);
+
+    heap_sort(&melhores_regs);
+    for (int j = 0; j < *i; j++) {
+        ret[j] = melhores_regs.vetor[j].reg;
+    }
+
+    heap_apaga(&melhores_regs);
+    return ret;
+    //printf("Visitados: %d\n", qtd_visitados);
 }
