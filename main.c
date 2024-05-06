@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <math.h>
 
 #include "./lib/include/hash.h"
@@ -80,7 +79,10 @@ int utf8_strlen(const char *s) {
 
 void aloca(void **municipio) {
     *municipio = (tmunicipio *) malloc(sizeof(tmunicipio));
-    assert(*municipio != NULL);
+    if (*municipio == NULL) {
+        printf("Erro ao alocar memória\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void insere(void *municipio, char *key, char *value) {
