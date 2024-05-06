@@ -13,7 +13,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: compile and run test files
+    - name: testa heap.c
+        cd ./lib/test/
+        gcc test_heap.c ../src/heap.c -o test_heap.exe
+        ./test_heap.exe
+    - name: testa abb.c
       run: |
         cd ./lib/test/
-        gcc test_abb.c ../src/abb.c ../src/heap.c -o test_abb.exe && ./test_abb.exe
+        gcc test_abb.c ../src/abb.c ../src/heap.c -o test_abb.exe
+        ./test_abb.exe
+    - name: testa hash.c
+      run: |
+        cd ./lib/test/
+        gcc test_hash.c ../src/hash.c -o test_hash.exe
+        ./test_hash.exe
+    - name: testa main.c
+      run: |
+        gcc ./lib/src/hash.c ./lib/src/json.c ./lib/src/abb.c ./lib/src/heap.c ./test_main.c -o test_main.exe
+        ./test_main.exe
