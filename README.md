@@ -14,7 +14,7 @@ https://github.com/kelvins/municipios-brasileiros/blob/main/json/municipios.json
 ## Tarefa 3 (combinar tarefa 1 e 2).
 
 **Objetivo:** Dado o nome de uma cidade retornar todas as informações das N cidades vizinhas mais próximas. 
-**Descrição:** Crie uma outra tabela hash que dado o nome da cidade retorne o codigo_ibge. De posse do codigo_ibge utilize o código da tarefa 2 para retornar os vizinhos mais próximos e o código da tarefa 1 para retornar as informações das cidades vizinhas.
+**Descrição:** Crie uma outra tabela hash que dado o nome da cidade retorne o codigo_ibge. De posse do codigo_ibge utilize o código da tarefa 2 para retornar os vizinhos mais próximos e o código da tarefa 1 para retornar as informações das cidades vizinhas. Cidades com nomes iguais vocês devem retornar a lista de nomes e deixar o usuário escolher a cidade desejada.
 
 ## Entrega:
 
@@ -23,6 +23,6 @@ https://github.com/kelvins/municipios-brasileiros/blob/main/json/municipios.json
 
 ## Trabalho individual
 
-- **Plágio entre alunos:** Será considerado zero tanto para quem passou quanto para quem copiou. Não repasse seu código para o seu colega em hipótese alguma. No entanto fiquem livres para discutir e explicar entre vocês ideias e possibilidades. 
+- **Plágio entre alunos:** Será considerado zero tanto para quem passou quanto para quem copiou. Não repasse seu código para o seu colega em hipótese alguma. No entanto fiquem livres para discutir e explicar entre vocês ideias e possibilidades. No entanto fiquem livres para discutir e explicar entre vocês ideias e possibilidades.
 
 - **Plágio da internet ou chatgpt:**  Não serão permitidas cópias destas fontes, no entanto vocês são encorajados a utilizar o chatgpt e a internet como material de consulta. Minha sugestão, principalmente para o caso do chatgpt, é que você olhe e entenda as ideias principais do código,  feche o código fornecido pela plataforma, e implemente de sua cabeça a funcionalidade desejada.

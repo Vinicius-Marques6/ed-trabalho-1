@@ -51,6 +51,11 @@ int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), voi
                         *end = '\0';
                     }
 
+                    char *barra_inv = strchr(value, '\\');
+                    if (barra_inv != NULL) {
+                        memmove(barra_inv, barra_inv + 1, strlen(barra_inv));
+                    }
+
                     insere(reg, keys[i], value);
                 }
             }

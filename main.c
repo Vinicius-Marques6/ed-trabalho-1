@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 
 #include "./lib/include/hash.h"
 #include "./lib/include/abb.h"
@@ -188,7 +189,7 @@ void imprime_municipio(tmunicipio *m) {
     imprime_linha(m, nome_len, fuso_len);
 }
 
-void imprime_municipios(tmunicipio **m, int i) {
+void imprime_municipios(tmunicipio * ref, tmunicipio *m[], int i) {
     if (m == NULL) {
         printf("%sMunicípio não encontrado%s\n", COR_ERRO, COR_RESET);
         return;
@@ -213,6 +214,10 @@ void imprime_municipios(tmunicipio **m, int i) {
     for(int j = 0; j <= i_len; j++) {
         printf(" ");
     }
+    if (ref != NULL) {
+        col();
+        printf("%s Distância ", COR_TITULO);
+    }
     imprime_cabecalho(nome_len, fuso_len);
 
     for (int j = 0; j < i; j++) {
@@ -220,6 +225,10 @@ void imprime_municipios(tmunicipio **m, int i) {
         int fuso_diff = strlen(m[j]->fuso_horario) - utf8_strlen(m[j]->fuso_horario);
 
         printf("%*d ", i_len,j + 1);
+        if (ref != NULL) {
+            col();
+            printf(" %*.2fkm ", 7, sqrt(distancia(ref, m[j])) * 100);
+        }
         imprime_linha(m[j], nome_len + nome_diff, fuso_len + fuso_diff);
     }
 }
@@ -271,6 +280,7 @@ int main(int argc, char *argv[]) {
         printf("Erro ao fazer o parse do arquivo %s\n", argv[1]);
         return EXIT_FAILURE;
     }
+    fclose(fmunicipios);
 
     #ifdef VERBOSE
         imprime_relatorio(hash_cod, "Código IBGE");
@@ -348,7 +358,6 @@ int main(int argc, char *argv[]) {
                 continue;
             }
 
-            //tmunicipio *m = (tmunicipio *) hash_busca(hash_nome, nome);
             tmunicipio **m = (tmunicipio **) hash_busca_todos(hash_nome, nome);
             if (m[0] != NULL) {
                 int selecionado = 0;
@@ -358,7 +367,7 @@ int main(int argc, char *argv[]) {
                     int i;
                     for (i = 0; m[i] != NULL; i++);
 
-                    imprime_municipios(m, i);
+                    imprime_municipios(NULL, m, i);
 
                     scanf("%d", &selecionado);
                     selecionado--;
@@ -371,7 +380,7 @@ int main(int argc, char *argv[]) {
 
                 tmunicipio **melhor = (tmunicipio **) abb_busca_prox(&arv, m[selecionado], &qtd_vizinhos);
 
-                imprime_municipios(melhor, qtd_vizinhos);
+                imprime_municipios(m[selecionado], melhor, qtd_vizinhos);
 
                 free(melhor);
             } else {
@@ -383,10 +392,10 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    printf("Saindo...\n");
     hash_apaga(&hash_cod);
     free(hash_cod.table);
-    fclose(fmunicipios);
+    abb_apaga(&arv);
+    printf("Saindo...\n");
 
     return EXIT_SUCCESS;
 }

@@ -124,3 +124,19 @@ void ** abb_busca_prox(tarv * parv, void * reg, int * i) {
     //printf("Visitados: %d\n", qtd_visitados);
     return ret;
 }
+
+void abb_apaga_node(tarv * parv, tnode * pnode) {
+    if (pnode == NULL) {
+        return;
+    }
+
+    abb_apaga_node(parv, pnode->esq);
+    abb_apaga_node(parv, pnode->dir);
+    free(pnode);
+}
+
+void abb_apaga(tarv * parv) {
+    abb_apaga_node(parv, parv->raiz);
+    parv->raiz = NULL;
+    parv->tam = 0;
+}

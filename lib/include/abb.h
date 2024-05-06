@@ -19,5 +19,6 @@ void abb_constroi(tarv *parv, double (*cmp)(void *, void *, int), double (*dist)
 int abb_insere(tarv * parv, void * reg);
 void * abb_busca(tarv * parv,  void * reg);
 void ** abb_busca_prox(tarv * parv, void * reg, int * i);
+void abb_apaga(tarv * parv);
 
 #endif
