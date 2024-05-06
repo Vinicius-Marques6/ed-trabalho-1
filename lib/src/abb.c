@@ -64,15 +64,19 @@ typedef struct {
 } tmunicipio;
 
 void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, theap * melhores_regs, int *qtd_visitados) {
+    // Se o nó for nulo, retorna
     if (pnode == NULL) {
         return;
     }
 
     ++(*qtd_visitados);
 
+    // Calcula a distância entre o nó atual e o nó de referência
     double dist = parv->dist(pnode->reg, reg);
+    // Se a distância for maior que 0, insere no heap
     if (dist > 0) {
         int ret = heap_insere(melhores_regs, pnode->reg, dist);
+        // Se o heap estiver cheio e a distância for menor que a maior distância do heap, altera a prioridade
         if (ret == EXIT_FAILURE && dist < melhores_regs->vetor[0].dist) {
             altera_prioridade(melhores_regs, 0, pnode->reg, dist);
         }
@@ -117,6 +121,6 @@ void ** abb_busca_prox(tarv * parv, void * reg, int * i) {
     }
 
     heap_apaga(&melhores_regs);
-    return ret;
     //printf("Visitados: %d\n", qtd_visitados);
+    return ret;
 }

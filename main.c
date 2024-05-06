@@ -313,8 +313,21 @@ int main(int argc, char *argv[]) {
             tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
             if (m != NULL) {
                 tmunicipio **melhor = (tmunicipio **) abb_busca_prox(&arv, m, &qtd_vizinhos);
+
+                int i_len = int_len(qtd_vizinhos);
+                for(int j = 0; j <= i_len; j++) {
+                    printf(" ");
+                }
+                col();
+                printf("%s Cód. IBGE %s", COR_TITULO, COR_RESET);
+                col();
+                printf("\n");
                 for (int i = 0; i < qtd_vizinhos; i++) {
-                    printf("%sCódigo IBGE:%s %s\n", COR_TITULO, COR_RESET , melhor[i]->codigo_ibge);
+                    printf("%*d ", i_len, i + 1);
+                    col();
+                    printf(" %*s ", 9, m->codigo_ibge);
+                    col();
+                    printf("\n");
                 }
                 
                 free(melhor);
