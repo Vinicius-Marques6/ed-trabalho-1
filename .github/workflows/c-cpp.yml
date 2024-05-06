@@ -14,5 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: compile and run test files
-      run: cd ./lib/test/
+      run: |
+        cd ./lib/test/
         gcc test_abb.c ../src/abb.c ../src/heap.c -o test_abb.exe && ./test_abb.exe
