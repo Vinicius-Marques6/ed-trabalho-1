@@ -93,8 +93,13 @@ void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, theap
         node_contr = pnode->esq;
     }
 
-    abb_busca_prox_node(parv, node_prox, reg, ++nivel, melhores_regs, qtd_visitados);
-    abb_busca_prox_node(parv, node_contr, reg, ++nivel, melhores_regs, qtd_visitados);
+    abb_busca_prox_node(parv, node_prox, reg, nivel+1, melhores_regs, qtd_visitados);
+
+    
+    // Se a distância do nó atual for menor que a maior distância do heap, busca no outro ramo
+    if (fabs(parv->cmp(pnode->reg, reg, nivel)) < melhores_regs->vetor[0].dist) {
+        abb_busca_prox_node(parv, node_contr, reg, nivel+1, melhores_regs, qtd_visitados);
+    }
 }
 
 void ** abb_busca_prox(tarv * parv, void * reg, int * i) {
@@ -121,7 +126,9 @@ void ** abb_busca_prox(tarv * parv, void * reg, int * i) {
     }
 
     heap_apaga(&melhores_regs);
-    //printf("Visitados: %d\n", qtd_visitados);
+    #ifdef VERBOSE
+        printf("Visitados: %d\n", qtd_visitados);
+    #endif
     return ret;
 }
 
