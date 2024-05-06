@@ -1,4 +1,4 @@
-name: C CI
+name: C/C++ CI
 
 on:
   push:
@@ -14,6 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: testa heap.c
+      run: |
         cd ./lib/test/
         gcc test_heap.c ../src/heap.c -o test_heap.exe
         ./test_heap.exe
