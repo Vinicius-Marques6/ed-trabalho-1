@@ -337,7 +337,7 @@ int main(int argc, char *argv[]) {
                 for (int i = 0; i < qtd_vizinhos; i++) {
                     printf("%*d ", i_len, i + 1);
                     col();
-                    printf(" %*s ", 9, m->codigo_ibge);
+                    printf(" %*s ", 9, melhor[i]->codigo_ibge);
                     col();
                     printf("\n");
                 }
