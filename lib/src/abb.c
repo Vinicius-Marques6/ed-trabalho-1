@@ -51,53 +51,46 @@ void * abb_busca(tarv * parv, void * reg){
     return abb_busca_node(parv,parv->raiz,reg, 0);
 }
 
-typedef struct {
-    char codigo_ibge[8];
-    char nome[100];
-    float latitude;
-    float longitude;
-    int capital;
-    int codigo_uf;
-    int siafi_id;
-    int ddd;
-    char fuso_horario[100];
-} tmunicipio;
-
 void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, theap * melhores_regs, int *qtd_visitados) {
     // Se o nó for nulo, retorna
     if (pnode == NULL) {
         return;
     }
 
-    ++(*qtd_visitados);
+    ++(*qtd_visitados); // ignora isso
 
     // Calcula a distância entre o nó atual e o nó de referência
     double dist = parv->dist(pnode->reg, reg);
     // Se a distância for maior que 0, insere no heap
     if (dist > 0) {
+        // Tenta inserir na heap até ela encher
         int ret = heap_insere(melhores_regs, pnode->reg, dist);
-        // Se o heap estiver cheio e a distância for menor que a maior distância do heap, altera a prioridade
+        // Se o heap estiver cheio e a distância for menor que a maior distância do heap, altera a prioridade do nó raiz
         if (ret == EXIT_FAILURE && dist < melhores_regs->vetor[0].dist) {
             altera_prioridade(melhores_regs, 0, pnode->reg, dist);
         }
     }
 
+    // Declara os nós próximos e contrários
     tnode * node_prox = NULL;
     tnode * node_contr = NULL;
 
-    if (parv->cmp(pnode->reg, reg, nivel) > 0) {
+    // Compara o nó atual com o nó de referência e define os nós próximos e contrários
+    if (parv->cmp(pnode->reg, reg, nivel) > 0) { // esquerda primeiro
         node_prox = pnode->esq;
         node_contr = pnode->dir;
-    } else {
+    } else { // direita primeiro
         node_prox = pnode->dir;
         node_contr = pnode->esq;
     }
 
+    // Busca no nó próximo
     abb_busca_prox_node(parv, node_prox, reg, nivel+1, melhores_regs, qtd_visitados);
 
     
-    // Se a distância do nó atual for menor que a maior distância do heap, busca no outro ramo
+    // Se a distância do nó atual com o nó de referência for menor que a maior distância do heap, busca no outro ramo
     if (fabs(parv->cmp(pnode->reg, reg, nivel)) < melhores_regs->vetor[0].dist) {
+        // Busca no nó contrário
         abb_busca_prox_node(parv, node_contr, reg, nivel+1, melhores_regs, qtd_visitados);
     }
 }
