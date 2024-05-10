@@ -173,7 +173,7 @@ int main() {
     printf("Busca de vizinhos por nome: OK\n");
 
     hash_apaga(&hash_cod);
-    free(hash_cod.table);
+    free(hash_nome.table);
     abb_apaga(&arv);
     
     return EXIT_SUCCESS;
