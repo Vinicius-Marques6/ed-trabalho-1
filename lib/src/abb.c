@@ -88,8 +88,9 @@ void abb_busca_prox_node(tarv * parv, tnode * pnode, void *reg, int nivel, theap
     abb_busca_prox_node(parv, node_prox, reg, nivel+1, melhores_regs, qtd_visitados);
 
     
+    
     // Se a distância do nó atual com o nó de referência for menor que a maior distância do heap, busca no outro ramo
-    if (fabs(parv->cmp(pnode->reg, reg, nivel)) < melhores_regs->vetor[0].dist) {
+    if (pow(parv->cmp(pnode->reg, reg, nivel), 2) < melhores_regs->vetor[0].dist) {
         // Busca no nó contrário
         abb_busca_prox_node(parv, node_contr, reg, nivel+1, melhores_regs, qtd_visitados);
     }

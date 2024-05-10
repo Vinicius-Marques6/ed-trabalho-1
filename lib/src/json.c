@@ -47,7 +47,7 @@ int json_parse(FILE * fjson, char *keys[], int n, void (*aloca)(void **reg), voi
                         }
                     }
                     char *end = strrchr(value, ',');
-                    if (end != NULL && *(end+1) == '\n') {
+                    if (end != NULL) {
                         *end = '\0';
                     }
 

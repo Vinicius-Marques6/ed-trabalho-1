@@ -395,7 +395,7 @@ int main(int argc, char *argv[]) {
     }
     
     hash_apaga(&hash_cod);
-    free(hash_cod.table);
+    free(hash_nome.table);
     abb_apaga(&arv);
     printf("Saindo...\n");
 
