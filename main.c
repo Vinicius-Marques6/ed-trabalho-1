@@ -29,6 +29,13 @@ RESET   "\x1b[0m"
 #define COR_ERRO "\x1b[31m"
 #define COR_RESET "\x1b[0m"
 
+#define Coluna(...) printf("%s|%s", COR_BARRA, COR_RESET);\
+printf(__VA_ARGS__);
+
+#define Error(x) printf("%s%s%s", COR_ERRO, x, COR_RESET);
+
+#define NAO_ENCONTRADO "Município não encontrado\n"
+
 typedef struct {
     char codigo_ibge[8];
     char nome[100];
@@ -132,68 +139,47 @@ void col() {
 }
 
 void imprime_cabecalho(int nome_len, int fuso_len) {
-    col();
-    printf("%s Cód. IBGE ", COR_TITULO);
-    col();
-    printf("%s %*s ", COR_TITULO, nome_len, "Nome");
-    col();
-    printf("%s   Latitude ", COR_TITULO);
-    col();
-    printf("%s  Longitude ", COR_TITULO);
-    col();
-    printf("%s Capital ", COR_TITULO);
-    col();
-    printf("%s Cód. UF ", COR_TITULO);
-    col();
-    printf("%s Siafi ID ", COR_TITULO);
-    col();
-    printf("%s DDD ", COR_TITULO);
-    col();
-    printf("%s  %*s ", COR_TITULO, fuso_len, "Fuso Horário");
-    col();
-    printf("\n");
+    Coluna("%s Cód. IBGE ", COR_TITULO);
+    Coluna("%s %*s ", COR_TITULO, nome_len, "Nome");
+    Coluna("%s   Latitude ", COR_TITULO);
+    Coluna("%s  Longitude ", COR_TITULO);
+    Coluna("%s Capital ", COR_TITULO);
+    Coluna("%s Cód. UF ", COR_TITULO);
+    Coluna("%s Siafi ID ", COR_TITULO);
+    Coluna("%s DDD ", COR_TITULO);
+    Coluna("%s  %*s ", COR_TITULO, fuso_len, "Fuso Horário");
+    Coluna("\n");
 }
 
 void imprime_linha(tmunicipio * m, int nome_len, int fuso_len) {
-    col();
-    printf(" %*s ", 9, m->codigo_ibge);
-    col();
-    printf(" %*s ", nome_len, m->nome);
-    col();
-    printf(" %*f ", 10, m->latitude);
-    col();
-    printf(" %*f ", 10, m->longitude);
-    col();
-    printf(" %*d ", 7, m->capital);
-    col();
-    printf(" %*d ", 7, m->codigo_uf);
-    col();
-    printf(" %*d ", 8, m->siafi_id);
-    col();
-    printf(" %*d ", 3, m->ddd);
-    col();
-    printf(" %*s ", fuso_len, m->fuso_horario);
-    col();
-    printf("\n");
+    Coluna(" %*s ", 9, m->codigo_ibge);
+    Coluna(" %*s ", nome_len, m->nome);
+    Coluna(" %*f ", 10, m->latitude);
+    Coluna(" %*f ", 10, m->longitude);
+    Coluna(" %*d ", 7, m->capital);
+    Coluna(" %*d ", 7, m->codigo_uf);
+    Coluna(" %*d ", 8, m->siafi_id);
+    Coluna(" %*d ", 3, m->ddd);
+    Coluna(" %*s ", fuso_len, m->fuso_horario);
+    Coluna("\n");
 }
 
 void imprime_municipio(tmunicipio *m) {
-
     if (m == NULL) {
-        printf("%sMunicípio não encontrado%s\n", COR_ERRO, COR_RESET);
+        Error(NAO_ENCONTRADO);
         return;
     }
 
     int nome_len = utf8_strlen(m->nome);
     int fuso_len = utf8_strlen(m->fuso_horario);
 
-    imprime_cabecalho( nome_len, fuso_len);
+    imprime_cabecalho(nome_len, fuso_len);
     imprime_linha(m, nome_len, fuso_len);
 }
 
 void imprime_municipios(tmunicipio * ref, tmunicipio *m[], int i) {
     if (m == NULL) {
-        printf("%sMunicípio não encontrado%s\n", COR_ERRO, COR_RESET);
+        Error(NAO_ENCONTRADO);
         return;
     }
 
@@ -217,8 +203,7 @@ void imprime_municipios(tmunicipio * ref, tmunicipio *m[], int i) {
         printf(" ");
     }
     if (ref != NULL) {
-        col();
-        printf("%s Distância ", COR_TITULO);
+        Coluna("%s Distância ", COR_TITULO);
     }
     imprime_cabecalho(nome_len, fuso_len);
 
@@ -228,8 +213,7 @@ void imprime_municipios(tmunicipio * ref, tmunicipio *m[], int i) {
 
         printf("%*d ", i_len,j + 1);
         if (ref != NULL) {
-            col();
-            printf(" %*.2fkm ", 7, sqrt(distancia(ref, m[j])) * 100);
+            Coluna(" %*.2fkm ", 7, sqrt(distancia(ref, m[j])) * 100);
         }
         imprime_linha(m[j], nome_len + nome_diff, fuso_len + fuso_diff);
     }
@@ -245,9 +229,9 @@ void imprime_relatorio(thash hash, char *nome) {
 #endif
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Uso: %s [arquivo].json\n", argv[0]);
-        return EXIT_FAILURE;
+    char *filename = "./municipios.json";
+    if (argc != 1) {
+        filename = argv[1];
     }
 
     FILE *fmunicipios;
@@ -257,10 +241,10 @@ int main(int argc, char *argv[]) {
     hash_constroi(&hash_nome, 10006, get_nome);
     abb_constroi(&arv, cmp, distancia);
 
-    fmunicipios = fopen(argv[1], "r");
+    fmunicipios = fopen(filename, "r");
 
     if (fmunicipios == NULL) {
-        printf("%sErro! Não foi possível abrir o arquivo %s\n", COR_ERRO,argv[1]);
+        printf("%sErro! Não foi possível abrir o arquivo %s\n", COR_ERRO, filename);
         return EXIT_FAILURE;
     }
 
@@ -279,7 +263,7 @@ int main(int argc, char *argv[]) {
         hash_apaga(&hash_cod);
         fclose(fmunicipios);
 
-        printf("Erro ao fazer o parse do arquivo %s\n", argv[1]);
+        printf("Erro ao fazer o parse do arquivo %s\n", filename);
         return EXIT_FAILURE;
     }
     fclose(fmunicipios);
@@ -386,7 +370,7 @@ int main(int argc, char *argv[]) {
 
                 free(melhor);
             } else {
-                printf("Município não encontrado\n");
+                Error(NAO_ENCONTRADO);
             }
             free(m);  
         } else {
