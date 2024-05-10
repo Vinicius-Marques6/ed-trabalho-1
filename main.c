@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <conio.h>
 
 #include "./lib/include/hash.h"
 #include "./lib/include/abb.h"
@@ -280,7 +281,8 @@ int main(int argc, char *argv[]) {
                 "3 - Nome\n"
                 "0 - Sair\n");
         int opcao;
-        scanf("%d", &opcao);
+        opcao = getch() - '0';
+        //scanf("%d", &opcao);
         if (opcao == 0) {
             break;
 
@@ -355,8 +357,42 @@ int main(int argc, char *argv[]) {
 
                     imprime_municipios(NULL, m, i);
 
-                    scanf("%d", &selecionado);
-                    selecionado--;
+                    while(1){
+                        int arrow = getch();
+                        if (arrow == 13) {
+                            break;
+                        }
+                        arrow = getch();
+
+                        if (arrow == 80) {
+                            selecionado++;
+                        } else if (arrow == 72) {
+                            selecionado--;
+                        }
+
+                        selecionado = (selecionado + i) % i;
+
+                        //bold the selected line
+                        printf("\033[%dA", i + 1);
+                        printf("%d\n", selecionado);
+                        for (int j = 0; j < i; j++) {
+                            char *cor = COR_AVISO;
+                            if (j == selecionado) {
+                                printf("%s", BOLD);
+                                printf("%s- ", COR_AVISO);
+                            } else {
+                                printf("  ");
+                                cor = COR_RESET;
+                            }
+                            Coluna("%s %*s ", cor, 9, m[j]->codigo_ibge);
+                            Coluna("%s %s ", cor, m[j]->nome);
+                            printf("%s\n", NO_BOLD);
+                        }
+
+                    }
+
+                    //scanf("%d", &selecionado);
+                    //selecionado--;
                     if (selecionado < 0 || selecionado >= i) {
                         printf("Opção inválida\n");
                         free(m);
