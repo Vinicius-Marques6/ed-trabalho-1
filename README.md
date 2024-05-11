@@ -1,5 +1,18 @@
 # Trabalho 1 - Cidades mais próximas
 
+## Compilando
+
+### Windows:
+```bat
+    ./compile.bat
+```
+### Linux:
+```sh
+    ./compile.sh
+```
+
+> Windows e Linux: Você pode adicionar a flag `-v` para compilar informações extras sobre a hash e kd-tree.
+
 ## Tarefa 1: (consulta cidade)
 
 **Objetivo:** Dado o codigo_ibge retorne as informações desta cidade
