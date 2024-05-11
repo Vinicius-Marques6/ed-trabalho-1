@@ -134,10 +134,6 @@ int int_len(int n) {
     return len;
 }
 
-void col() {
-    printf("%s|%s", COR_BARRA, COR_RESET);
-}
-
 void imprime_cabecalho(int nome_len, int fuso_len) {
     Coluna("%s Cód. IBGE ", COR_TITULO);
     Coluna("%s %*s ", COR_TITULO, nome_len, "Nome");
@@ -314,16 +310,12 @@ int main(int argc, char *argv[]) {
                 for(int j = 0; j <= i_len; j++) {
                     printf(" ");
                 }
-                col();
-                printf("%s Cód. IBGE %s", COR_TITULO, COR_RESET);
-                col();
-                printf("\n");
+                Coluna("%s Cód. IBGE %s", COR_TITULO, COR_RESET);
+                Coluna("\n");
                 for (int i = 0; i < qtd_vizinhos; i++) {
                     printf("%*d ", i_len, i + 1);
-                    col();
-                    printf(" %*s ", 9, melhor[i]->codigo_ibge);
-                    col();
-                    printf("\n");
+                    Coluna(" %*s ", 9, melhor[i]->codigo_ibge);
+                    Coluna("\n");
                 }
                 
                 free(melhor);

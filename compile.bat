@@ -1,15 +1,7 @@
 @echo off
 
 echo Compilando...
-set verbose=n
-if "%~1" == "-v"  (
-    set verbose=s
-) else if "%~1" == "--verbose" (
-    set verbose=s
-) else (
-    set /p verbose="Deseja compilar em modo verbose? (s/n): "
-)
-if "%verbose%" == "s" (
+if "%~1" == "-v" (
     gcc -Wall -pedantic -g -o main.exe ./lib/src/hash.c ./lib/src/json.c ./lib/src/abb.c ./lib/src/heap.c ./main.c -DVERBOSE
 ) else (
     gcc -Wall -pedantic -g -o main.exe ./lib/src/hash.c ./lib/src/json.c ./lib/src/abb.c ./lib/src/heap.c ./main.c

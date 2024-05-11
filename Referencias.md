@@ -1,5 +1,7 @@
 Biblioteca <string.h>: https://petbcc.ufscar.br/string/
 
+K-d tree: https://en.wikipedia.org/wiki/K-d_tree
+
 ### Vídeos
 
 k-d Trees: https://youtu.be/BK5x7IUTIyU
