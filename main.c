@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
             char codigo_ibge[8];
             scanf("%s", codigo_ibge);
             if (strcmp(codigo_ibge, "0") == 0) {
-                break;
+                continue;
             }
             tmunicipio *m = (tmunicipio *) hash_busca(hash_cod, codigo_ibge);
             imprime_municipio(m);
@@ -320,7 +320,7 @@ int main(int argc, char *argv[]) {
                 
                 free(melhor);
             } else {
-                printf("Município não encontrado\n");
+                printf(NAO_ENCONTRADO);
             }
         } else if (opcao == 3) {
             printf("Digite o nome do município que deseja buscar: ");
@@ -364,7 +364,23 @@ int main(int argc, char *argv[]) {
             } else {
                 Error(NAO_ENCONTRADO);
             }
-            free(m);  
+            free(m);
+        } else if (opcao == 4) {
+            FILE *snoopy = fopen("snoopy.txt", "r");
+            char linha[1024];
+
+            while (fgets(linha, 1024, snoopy)) {
+                printf("%s", linha);
+            }
+            fclose(snoopy);
+        } else if (opcao == 5) {
+            FILE *takashi = fopen("takashi.txt", "r");
+            char linha[1024];
+
+            while (fgets(linha, 1024, takashi)) {
+                printf("%s", linha);
+            }
+            fclose(takashi);
         } else {
             printf("Opção inválida\n");
         }
